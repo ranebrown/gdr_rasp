@@ -19,13 +19,13 @@ CFLAGS = -Wall -Wextra -g $(INCLUDES)
 LFLAGS =
 
 # The specific libraries that project depends on -l flags
-LIBS =
+LIBS = -lwiringPi
 
 # All source files
-SRCS = $(wildcard $(SRCDIR)/*.c)
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
 
 # All object files
-OBJS := $(SRCS:$(SRCDIR)/%.c=%.o)
+OBJS := $(SRCS:$(SRCDIR)/%.cpp=%.o)
 
 # name of executable
 MAIN = exc
@@ -34,14 +34,14 @@ MAIN = exc
 all: $(MAIN)
 
 $(MAIN): $(OBJS)
-	@$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 	@echo "Compiling executable $(MAIN)..."
 	@echo "Operation complete :)"
 
 # Automatically builds all object files from source files
 # -c option compiles but does not link (create object files)
 # -o is output filename
-$(OBJS): %.o : $(SRCDIR)/%.c
+$(OBJS): %.o : $(SRCDIR)/%.cpp
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiling $@..."
 
@@ -50,7 +50,6 @@ $(OBJS): %.o : $(SRCDIR)/%.c
 .PHONY: clean
 clean:
 	@if [ -e $(MAIN) ]; then rm $(MAIN); fi;
-	@if [ -e $(TESTEX) ]; then rm $(TESTEX); fi;
 	@if [ `find . -name "*.o" | head -1` ]; then rm *.o; fi;
 	@if [ `find . -name "*.txt" | head -1` ]; then rm *.txt; fi;
 	@echo "Cleaning..."
