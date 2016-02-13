@@ -7,7 +7,7 @@ TESTDIR = ../test
 INCDIR = ../inc
 
 # Compiler to use
-CC = gcc
+CC = g++
 
 # Include paths for header files
 INCLUDES = -I $(INCDIR)
