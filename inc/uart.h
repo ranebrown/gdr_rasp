@@ -1,6 +1,9 @@
 #ifndef UART_H
     #define UART_H
 
+    // pi uart funcitons based on info found at:
+    // http://www.raspberry-projects.com/pi/programming-in-c/uart-serial-port/using-the-uart
+
     #include <stdio.h>
     #include <unistd.h>         //Used for UART
     #include <fcntl.h>          //Used for UART
