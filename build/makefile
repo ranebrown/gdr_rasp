@@ -34,7 +34,7 @@ MAIN = exc
 all: $(MAIN)
 
 $(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
+	@$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 	@echo "Compiling executable $(MAIN)..."
 	@echo "Operation complete :)"
 
