@@ -1,1 +1,3 @@
 -Iinc
+-I/usr/local/include/opencv
+-I/usr/local/include/opencv2

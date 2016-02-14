@@ -53,6 +53,8 @@ flags = [
         '-x',
         'c++',
         '-isystem', '/usr/include',
+        '-isystem', '/usr/local/include/opencv',
+        '-isystem', '/usr/local/include/opencv2',
         '-isystem', '/usr/include/c++/4.9.2'
 ]
 
