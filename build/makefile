@@ -10,16 +10,16 @@ INCDIR = ../inc
 CC = g++
 
 # Include paths for header files
-INCLUDES = -I $(INCDIR)
+INCLUDES = -I $(INCDIR) -I/usr/local/include/opencv -I/usr/local/include/opencv2
 
 # Compiler flags
 CFLAGS = -Wall -Wextra -g $(INCLUDES)
 
 # Paths to required libraries -L flags
-LFLAGS =
+LFLAGS = -L/usr/local/lib
 
 # The specific libraries that project depends on -l flags
-LIBS = -lwiringPi
+LIBS = -lopencv_core
 
 # All source files
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
