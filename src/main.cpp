@@ -6,7 +6,9 @@ extern "C"
     #include "uart.h"
     #include <unistd.h>
 }
+#include "opencv2/opencv.hpp"
 
+using namespace cv;
 using namespace std;
 
 int main(void)
@@ -15,6 +17,31 @@ int main(void)
     char txBuff[] = "hello";
     char rxBuff[255];
     int txRes = 1, rxRes = 1;
+
+    VideoCapture capture(0);            // open default camera 0
+    if(!capture.isOpened())
+    {
+        // need to send a message to pcb
+        cout<<"error with camera\n";
+        return 1;
+    }
+
+    namedWindow("result",1);            // window to display image (for testing only) XXX
+    Mat edges;
+
+    // main loop
+    while(1)
+    {
+        Mat frame;                      // holds a captured frame
+        capture >> frame;               // get a new frame from camera
+
+        // process image
+        cvtColor(frame, edges, CV_BGR2GRAY);
+        GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
+        Canny(edges, edges, 0, 30, 3);
+        imshow("result", edges);        // display the proccessed image XXX
+        if(waitKey(30) >= 0) break;
+    }
 
     // uart initialization
     int uart0_filestream = initUART();
