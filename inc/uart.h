@@ -14,4 +14,18 @@
      */
     int initUART();
 
+    /*
+     * Sends characters via uart
+     * returns 0 for success
+     * returns 1 for error
+     */
+    int uartSend(int uart0_filestream, char *txBuffer, int buffSize);
+
+    /*
+     * Reads characters from uart
+     * returns 0 success
+     * returns 1 error
+     */
+    int uartRead(int uart0_filestream, char *rxBuffer, int buffSize);
+
 #endif

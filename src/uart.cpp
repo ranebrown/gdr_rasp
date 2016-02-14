@@ -3,9 +3,9 @@ extern "C" {
     #include "uart.h"
 
     /*
-     * Opens UART
+     * Opens UART channel
      * returns file descriptor for uart device
-     * return -1 for errro
+     * returns 1 for error
      */
     int initUART()
     {
@@ -29,7 +29,7 @@ extern "C" {
         if (uart0_filestream == -1)
         {
              printf("Error - Unable to open UART.\n");
-             return -1;
+             return 1;
         }
 
         /* UART Options
@@ -53,5 +53,55 @@ extern "C" {
         tcsetattr(uart0_filestream, TCSANOW, &options);
 
         return uart0_filestream;
+    }
+
+    /*
+     * Sends characters via uart
+     * returns 0 for success
+     * returns 1 for error
+     */
+    int uartSend(int uart0_filestream, char *txBuffer, int buffSize)
+    {
+        if (uart0_filestream != -1)
+        {
+            //Filestream, bytes to write, number of bytes to write
+            int count = write(uart0_filestream, txBuffer, buffSize);
+            if (count < 0)
+            {
+                printf("UART TX error\n");
+                return 1;
+            }
+            else
+                return 0;
+        }
+        else
+            return 1;
+    }
+
+    /*
+     * Reads characters from uart
+     * returns 0 success
+     * returns 1 error
+     */
+    int uartRead(int uart0_filestream, char *rxBuffer, int buffSize)
+    {
+        if (uart0_filestream != -1)
+        {
+            // Filestream, buffer to store in, number of bytes to read (max)
+            int rxLength = read(uart0_filestream, rxBuffer, buffSize);
+            if (rxLength <= 0)
+            {
+                // error no data
+                return 1;
+            }
+            else
+            {
+                //Bytes received
+                rxBuffer[rxLength] = '\0';
+                return 0;
+            }
+        }
+        else
+            return 1;
     }
 }
