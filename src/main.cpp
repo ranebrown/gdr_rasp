@@ -4,9 +4,9 @@
 extern "C"
 {
     #include "uart.h"
-    #include <unistd.h>
+    #include <unistd.h> // used for sleep XXX
 }
-#include "opencv2/opencv.hpp"
+#include <opencv.hpp>
 
 using namespace cv;
 using namespace std;
@@ -18,10 +18,14 @@ int main(void)
     char rxBuff[255];
     int txRes = 1, rxRes = 1;
 
-    VideoCapture capture(0);            // open default camera 0
+    // uart initialization
+    int uart0_filestream = initUART();
+
+    // open default camera 0
+    VideoCapture capture(0);
     if(!capture.isOpened())
     {
-        // need to send a message to pcb
+        // TODO need to send a message to pcb
         cout<<"error with camera\n";
         return 1;
     }
@@ -43,8 +47,6 @@ int main(void)
         if(waitKey(30) >= 0) break;
     }
 
-    // uart initialization
-    int uart0_filestream = initUART();
 
     // send data over uart
     txRes = uartSend(uart0_filestream, txBuff, strlen(txBuff));
