@@ -10,9 +10,10 @@ INCDIR = ../inc
 CC = g++
 
 # Include paths for header files
-INCLUDES = -I $(INCDIR)
+INCLUDES = -I $(INCDIR) -I /usr/local/include/opencv -I /usr/local/include/opencv2
 
 # Compiler flags
+# pkg-config pulls in needed libraries
 CFLAGS = -Wall -Wextra -g $(INCLUDES) `pkg-config --cflags --libs opencv`
 
 # Paths to required libraries -L flags
