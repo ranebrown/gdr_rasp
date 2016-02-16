@@ -46,9 +46,10 @@ int main(void)
         /* GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5); */
         /* Canny(edges, edges, 0, 30, 3); */
         /* imshow("result", edges);        // display the proccessed image XXX */
-        shapeDetect(frame);
-        /* shapeDetect(src);//XXX */
 
+        /* shapeDetect(frame); */
+
+        // if any key is pressed exit
         if(waitKey(30) >= 0) break;
     }
 

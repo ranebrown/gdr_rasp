@@ -11,7 +11,7 @@
     /**
      * Helper function to display text in the center of a contour
      */
-    void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
+    void setLabel(Mat& im, const string label, vector<Point>& contour);
 
     /**
      * Helper function to find a cosine of angle between vectors

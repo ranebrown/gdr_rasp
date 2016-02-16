@@ -3,19 +3,19 @@
 /**
  * Helper function to display text in the center of a contour
  */
-void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
+void setLabel(Mat& im, const string label, vector<Point>& contour)
 {
-    int fontface = cv::FONT_HERSHEY_SIMPLEX;
+    int fontface = FONT_HERSHEY_SIMPLEX;
     double scale = 0.4;
     int thickness = 1;
     int baseline = 0;
 
-    cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
-    cv::Rect r = cv::boundingRect(contour);
+    Size text = getTextSize(label, fontface, scale, thickness, &baseline);
+    Rect r = boundingRect(contour);
 
-    cv::Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
-    cv::rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), CV_RGB(255,255,255), CV_FILLED);
-    cv::putText(im, label, pt, fontface, scale, CV_RGB(0,0,0), thickness, 8);
+    Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
+    rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), CV_RGB(255,255,255), CV_FILLED);
+    putText(im, label, pt, fontface, scale, CV_RGB(0,0,0), thickness, 8);
 }
 
 /**
@@ -34,7 +34,7 @@ double angle(Point pt1, Point pt2, Point pt0)
 /*
  * Detects a octagon (stop sign)
  *      - 8 vertices
- *      - angles are ~135 degrees
+ *      - angles are ~135 degrees -> cos(135)~-.70
  * param frame: the image frame to process
  * return 0: success
  * return 1: error
@@ -49,17 +49,26 @@ int shapeDetect(Mat frame)
     }
 
     // down-scale and upscale the image to filter out the noise
-    Mat pyr, timg;
-    pyrDown(frame, pyr, Size(frame.cols/2, frame.rows/2));
-    pyrUp(pyr, timg, frame.size());
+    /* Mat pyr, timg; */
+    /* pyrDown(frame, pyr, Size(frame.cols/2, frame.rows/2)); */
+    /* pyrUp(pyr, timg, frame.size()); */
+
+    // filter image
+    Mat filt;
+    /* bilateralFilter(frame, filt, 9, 75, 75 ); */
 
     // Convert to grayscale
     Mat gray;
-    cvtColor(timg, gray, CV_BGR2GRAY);
+    cvtColor(frame, gray, CV_BGR2GRAY);
+
+    GaussianBlur(gray, filt, Size(7,7), 1.5, 1.5);
 
     // Convert to binary image using Canny
     Mat bw;
-    Canny(gray, bw, 0, 50, 5);
+    int x=0, y=200, z=3;
+    Canny(gray, bw, x, y, z);
+    dilate(bw, bw, Mat(), Point(-1,-1));
+    imshow("canny",bw);
 
     // Find contours
     vector<vector<Point> > contours;
