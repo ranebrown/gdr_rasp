@@ -49,7 +49,7 @@ int main(void)
         shapeDetect(frame);
         /* shapeDetect(src);//XXX */
 
-        /* if(waitKey(30) >= 0) break; */
+        if(waitKey(30) >= 0) break;
     }
 
 

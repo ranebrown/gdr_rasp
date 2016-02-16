@@ -42,39 +42,24 @@ double angle(Point pt1, Point pt2, Point pt0)
 // TODO squares example has additional filtering and detects multiple shapes rather than 1 per image
 int shapeDetect(Mat frame)
 {
-     if (frame.empty())
-     {
-        cout<<"bad frame \n";
-        return 1;
-     }
-
-    // Convert to grayscale
-    Mat gray;
-    cvtColor(frame, gray, CV_BGR2GRAY);
-    while(1)
+    if (frame.empty())
     {
-        imshow("grayscale",gray);
-        if(waitKey(30) >= 0) break;
+       cout<<"bad frame \n";
+       return 1;
     }
 
     // down-scale and upscale the image to filter out the noise
     Mat pyr, timg;
     pyrDown(frame, pyr, Size(frame.cols/2, frame.rows/2));
     pyrUp(pyr, timg, frame.size());
-    while(1)
-    {
-        imshow("filter",timg);
-        if(waitKey(30) >= 0) break;
-    }
+
+    // Convert to grayscale
+    Mat gray;
+    cvtColor(timg, gray, CV_BGR2GRAY);
 
     // Convert to binary image using Canny
     Mat bw;
     Canny(gray, bw, 0, 50, 5);
-    while(1)
-    {
-        imshow("binary canny",bw);
-        if(waitKey(30) >= 0) break;
-    }
 
     // Find contours
     vector<vector<Point> > contours;
@@ -114,7 +99,7 @@ int shapeDetect(Mat frame)
             double maxcos = cos.back();
 
             // Use the degrees obtained above and the number of vertices to determine the shape of the contour
-            if (vtc == 8 && mincos >= -0.75 && maxcos <= -0.65)
+            if (vtc == 8 && mincos >= -0.80 && maxcos <= -0.60)
             {
                 // found a hexagon
                 setLabel(dst, "stopsign", contours[i]);
