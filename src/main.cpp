@@ -7,6 +7,7 @@ extern "C"
     #include <unistd.h> // used for sleep XXX
 }
 #include <opencv.hpp>
+#include "shapeDetect.hpp"
 
 using namespace cv;
 using namespace std;
@@ -30,9 +31,10 @@ int main(void)
         return 1;
     }
 
-    namedWindow("result",1);            // window to display image (for testing only) XXX
+    /* namedWindow("result",1);            // window to display image (for testing only) XXX */
     Mat edges;
 
+    Mat src = cv::imread("../../test/data/shapes.png"); //XXX
     // main loop
     while(1)
     {
@@ -40,11 +42,14 @@ int main(void)
         capture >> frame;               // get a new frame from camera
 
         // process image
-        cvtColor(frame, edges, CV_BGR2GRAY);
-        GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-        Canny(edges, edges, 0, 30, 3);
-        imshow("result", edges);        // display the proccessed image XXX
-        if(waitKey(30) >= 0) break;
+        /* cvtColor(frame, edges, CV_BGR2GRAY); */
+        /* GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5); */
+        /* Canny(edges, edges, 0, 30, 3); */
+        /* imshow("result", edges);        // display the proccessed image XXX */
+        shapeDetect(frame);
+        /* shapeDetect(src);//XXX */
+
+        /* if(waitKey(30) >= 0) break; */
     }
 
 
