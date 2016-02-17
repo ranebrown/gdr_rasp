@@ -40,12 +40,12 @@ double angle(Point pt1, Point pt2, Point pt0)
  * return 1: error
  */
 // TODO squares example has additional filtering and detects multiple shapes rather than 1 per image
-int shapeDetect(Mat frame)
+Mat shapeDetect(Mat frame)
 {
     if (frame.empty())
     {
        cout<<"bad frame \n";
-       return 1;
+       return Mat();
     }
 
     // down-scale and upscale the image to filter out the noise
@@ -54,21 +54,20 @@ int shapeDetect(Mat frame)
     /* pyrUp(pyr, timg, frame.size()); */
 
     // filter image
-    Mat filt;
+    /* Mat filt; */
     /* bilateralFilter(frame, filt, 9, 75, 75 ); */
 
     // Convert to grayscale
-    Mat gray;
-    cvtColor(frame, gray, CV_BGR2GRAY);
+    /* Mat gray; */
+    /* cvtColor(frame, gray, CV_BGR2GRAY); */
 
-    GaussianBlur(gray, filt, Size(7,7), 1.5, 1.5);
+    GaussianBlur(frame, frame, Size(7,7), 1.5, 1.5);
 
     // Convert to binary image using Canny
     Mat bw;
-    int x=0, y=200, z=3;
-    Canny(gray, bw, x, y, z);
+    Canny(frame, bw, 50, 200, 3);
     dilate(bw, bw, Mat(), Point(-1,-1));
-    imshow("canny",bw);
+    /* imshow("canny",bw); */
 
     // Find contours
     vector<vector<Point> > contours;
@@ -77,7 +76,7 @@ int shapeDetect(Mat frame)
     // vector approx will contain the vertices of the polygonal approximation for the contour
     vector<Point> approx;
     // copy source image to display result XXX
-    Mat dst = frame.clone();
+    /* Mat dst = frame.clone(); */
 
     // Loop through all the contours and get the approximate polygonal curves for each contour
     for (unsigned int i = 0; i < contours.size(); i++)
@@ -86,7 +85,7 @@ int shapeDetect(Mat frame)
         approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
 
         // Skip small or non-convex objects
-        if (fabs(contourArea(contours[i])) < 100 || !isContourConvex(approx))
+        if (fabs(contourArea(contours[i])) < 200 || !isContourConvex(approx))
             continue;
 
         // possible octagon
@@ -111,7 +110,7 @@ int shapeDetect(Mat frame)
             if (vtc == 8 && mincos >= -0.80 && maxcos <= -0.60)
             {
                 // found a hexagon
-                setLabel(dst, "stopsign", contours[i]);
+                setLabel(bw, "stopsign", contours[i]);
             }
         }
     }
@@ -122,8 +121,8 @@ int shapeDetect(Mat frame)
     /* while(1) */
     /* { */
     /*     imshow("original",frame); */
-        imshow("final", dst);
+        /* imshow("final", dst); */
     /*     if(waitKey(30) >= 0) break; */
     /* } */
-    return 0;
+    return bw;
 }

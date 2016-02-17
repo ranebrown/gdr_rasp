@@ -8,6 +8,7 @@ extern "C"
 }
 #include <opencv.hpp>
 #include "shapeDetect.hpp"
+#include "colorDetect.hpp"
 
 using namespace cv;
 using namespace std;
@@ -31,10 +32,8 @@ int main(void)
         return 1;
     }
 
-    /* namedWindow("result",1);            // window to display image (for testing only) XXX */
     Mat edges;
 
-    Mat src = cv::imread("../../test/data/shapes.png"); //XXX
     // main loop
     while(1)
     {
@@ -47,7 +46,11 @@ int main(void)
         /* Canny(edges, edges, 0, 30, 3); */
         /* imshow("result", edges);        // display the proccessed image XXX */
 
-        /* shapeDetect(frame); */
+        Mat red = colorDetect(frame);
+        Mat out = shapeDetect(red);
+
+        // display processed image (testing only) XXX
+        imshow("result", out);
 
         // if any key is pressed exit
         if(waitKey(30) >= 0) break;

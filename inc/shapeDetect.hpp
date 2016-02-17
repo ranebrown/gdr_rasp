@@ -27,6 +27,6 @@
      * return 0: success
      * return 1: error
      */
-    int shapeDetect(Mat frame);
+    Mat shapeDetect(Mat frame);
 
-#endif // SHAPE_DETECT_H
+#endif // SHAPE_DETECT_HPP

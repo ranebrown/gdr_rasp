@@ -1,7 +1,14 @@
-#ifndef COLOR_DETECT_H
-    #define COLOR_DETECT_H
+#ifndef COLOR_DETECT_HPP
+    #define COLOR_DETECT_HPP
 
     #include <opencv.hpp>
     #include <iostream>
+    #include <string>
+    #include <vector>
 
-#endif // COLOR_DETECT_H
+    using namespace cv;
+    using namespace std;
+
+    Mat colorDetect(Mat frame);
+
+#endif // COLOR_DETECT_HPP
