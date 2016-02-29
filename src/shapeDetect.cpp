@@ -36,11 +36,11 @@ double angle(Point pt1, Point pt2, Point pt0)
  *      - 8 vertices
  *      - angles are ~135 degrees -> cos(135)~-.70
  * param frame: the image frame to process
+ * param dist: pointer to the distance to stop sign
  * return 0: success
  * return 1: error
  */
-// TODO squares example has additional filtering and detects multiple shapes rather than 1 per image
-Mat shapeDetect(Mat frame)
+Mat shapeDetect(Mat frame, float *dist)
 {
     if (frame.empty())
     {
@@ -48,26 +48,15 @@ Mat shapeDetect(Mat frame)
        return Mat();
     }
 
-    // down-scale and upscale the image to filter out the noise
-    /* Mat pyr, timg; */
-    /* pyrDown(frame, pyr, Size(frame.cols/2, frame.rows/2)); */
-    /* pyrUp(pyr, timg, frame.size()); */
-
     // filter image
-    /* Mat filt; */
-    /* bilateralFilter(frame, filt, 9, 75, 75 ); */
-
-    // Convert to grayscale
-    /* Mat gray; */
-    /* cvtColor(frame, gray, CV_BGR2GRAY); */
-
     GaussianBlur(frame, frame, Size(7,7), 1.5, 1.5);
 
     // Convert to binary image using Canny
     Mat bw;
-    Canny(frame, bw, 50, 200, 3);
+    Canny(frame, bw, 50, 200, 5);
+
+    // increase detected pixels
     dilate(bw, bw, Mat(), Point(-1,-1));
-    /* imshow("canny",bw); */
 
     // Find contours
     vector<vector<Point> > contours;
@@ -75,8 +64,6 @@ Mat shapeDetect(Mat frame)
 
     // vector approx will contain the vertices of the polygonal approximation for the contour
     vector<Point> approx;
-    // copy source image to display result XXX
-    /* Mat dst = frame.clone(); */
 
     // Loop through all the contours and get the approximate polygonal curves for each contour
     for (unsigned int i = 0; i < contours.size(); i++)
@@ -107,22 +94,14 @@ Mat shapeDetect(Mat frame)
             double maxcos = cos.back();
 
             // Use the degrees obtained above and the number of vertices to determine the shape of the contour
-            if (vtc == 8 && mincos >= -0.80 && maxcos <= -0.60)
+            // angle are pretty relaxed in case camera isn't straight on
+            if (vtc == 8 && mincos >= -0.85 && maxcos <= -0.55)
             {
-                // found a hexagon
+                // found a octagon (stop sign) -> caclulate distance
+                *dist = dist2obj(contours[i]);
                 setLabel(bw, "stopsign", contours[i]);
             }
         }
     }
-    /* // draw outline of shape (testing only) XXX */
-    /* const Point* p = &approx[0]; */
-    /* int n = (int)approx.size(); */
-    /* polylines(dst, &p, &n, 1, true, Scalar(0,255,0), 3, LINE_AA); */
-    /* while(1) */
-    /* { */
-    /*     imshow("original",frame); */
-        /* imshow("final", dst); */
-    /*     if(waitKey(30) >= 0) break; */
-    /* } */
     return bw;
 }

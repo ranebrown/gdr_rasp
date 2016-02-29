@@ -1,24 +1,23 @@
 #include <cstdlib>
-#include <iostream>
 #include <cstring>
 extern "C"
 {
     #include "uart.h"
     #include <unistd.h> // used for sleep XXX
 }
-#include <opencv.hpp>
+#include "master.hpp"
 #include "shapeDetect.hpp"
 #include "colorDetect.hpp"
-
-using namespace cv;
-using namespace std;
+#include "dist2obj.hpp"
 
 int main(void)
 {
     // variables
-    char txBuff[] = "hello";
+    char val = 0;
+    char *txBuff = &val;
     char rxBuff[255];
     int txRes = 1, rxRes = 1;
+    float dist = 0;
 
     // uart initialization
     int uart0_filestream = initUART();
@@ -32,8 +31,6 @@ int main(void)
         return 1;
     }
 
-    Mat edges;
-
     // main loop
     while(1)
     {
@@ -41,19 +38,30 @@ int main(void)
         capture >> frame;               // get a new frame from camera
 
         // process image
-        /* cvtColor(frame, edges, CV_BGR2GRAY); */
-        /* GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5); */
-        /* Canny(edges, edges, 0, 30, 3); */
-        /* imshow("result", edges);        // display the proccessed image XXX */
-
         Mat red = colorDetect(frame);
-        Mat out = shapeDetect(red);
+        Mat out = shapeDetect(red, &dist);
 
         // display processed image (testing only) XXX
-        imshow("result", out);
+        /* imshow("result", out); */
+
+        // print distance
+        /* printf("%f\n",dist); */
+
+        // convert distance to char so it can be sent over uart
+        val = (char)dist;
+        if(val <= 72)
+        {
+            // send data over uart
+            txRes = uartSend(uart0_filestream, txBuff, strlen(txBuff));
+            if(txRes != 0)
+            {
+                printf("bad val\n");
+                // TODO error handling
+            }
+        }
 
         // if any key is pressed exit
-        if(waitKey(30) >= 0) break;
+        /* if(waitKey(30) >= 0) break; */
     }
 
 

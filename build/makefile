@@ -35,16 +35,16 @@ MAIN = exc
 all: $(MAIN)
 
 $(MAIN): $(OBJS)
-	@$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 	@echo "Compiling executable $(MAIN)..."
+	@$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 	@echo "Operation complete :)"
 
 # Automatically builds all object files from source files
 # -c option compiles but does not link (create object files)
 # -o is output filename
 $(OBJS): %.o : $(SRCDIR)/%.cpp
-	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiling $@..."
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # This is used in case there is a file named clean
 # @ suppresses command at shell

@@ -2,8 +2,11 @@
 
 Mat colorDetect(Mat frame)
 {
-    // blur image to avoid false positives
-    medianBlur(frame, frame, 3);
+    if (frame.empty())
+    {
+       cout<<"bad frame \n";
+       return Mat();
+    }
 
     // convert image to HSV
     Mat hsv_image;
@@ -20,10 +23,7 @@ Mat colorDetect(Mat frame)
     addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
 
     // apply filter
-    GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
-
-    // copy results back to frame
-    frame = red_hue_image.clone();
+    GaussianBlur(red_hue_image, red_hue_image, Size(9, 9), 2, 2);
 
     // return processed image
     return red_hue_image;

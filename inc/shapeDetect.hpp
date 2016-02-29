@@ -1,12 +1,9 @@
 #ifndef SHAPE_DETECT_HPP
     #define SHAPE_DETECT_HPP
 
-    #include <opencv.hpp>
     #include <cmath>
-    #include <iostream>
-
-    using namespace cv;
-    using namespace std;
+    #include "master.hpp"
+    #include "dist2obj.hpp"
 
     /**
      * Helper function to display text in the center of a contour
@@ -24,9 +21,10 @@
      *      - 6 vertices
      *      - angles are ~120 degrees
      * param frame: the image frame to process
+     * param dist: pointer to the distance to stop sign
      * return 0: success
      * return 1: error
      */
-    Mat shapeDetect(Mat frame);
+    Mat shapeDetect(Mat frame, float *dist);
 
 #endif // SHAPE_DETECT_HPP
