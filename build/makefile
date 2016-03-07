@@ -20,7 +20,7 @@ CFLAGS = -Wall -Wextra -g $(INCLUDES) `pkg-config --cflags --libs opencv`
 LFLAGS =
 
 # The specific libraries that project depends on -l flags
-LIBS =
+LIBS = -lwiringPi
 
 # All source files
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
