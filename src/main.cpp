@@ -3,7 +3,7 @@
 extern "C"
 {
     #include "uart.h"
-    #include <unistd.h> // used for sleep XXX
+    #include <time.h>
     #include <wiringPi.h> // gpio
 }
 #include "master.hpp"
@@ -15,31 +15,80 @@ int main(void)
 {
     // variables
     char val = 0;
-    /* char *txBuff = &val; */
-    /* char rxBuff[255]; */
-    /* int txRes = 1, rxRes = 1; */
     float dist = 0;
-
-    // uart initialization
-    /* int uart0_filestream = initUART(); */
+    int xx = 0;
+    struct timespec tim, tim2;      // tim holds the desired sleep time, tim2 is filled with the remaining time if error occurs
+    tim.tv_sec  = 0;
+    tim.tv_nsec = 500000000L;       // 1/2 second sleep time
 
     // gpio initialization
     wiringPiSetup();
-    pinMode(0,OUTPUT);
+    pinMode(0,OUTPUT);      // stop sign signal
     digitalWrite(0,LOW);
+    pinMode(7,OUTPUT);      // vibration motor signal
+    digitalWrite(0,LOW);
+    pinMode(15,INPUT);      // power switch
+    pullUpDnControl(15, PUD_DOWN);
 
     // open default camera 0
     VideoCapture capture(0);
     if(!capture.isOpened())
     {
         // TODO need to send a message to pcb
-        cout<<"error with camera\n";
+        cout<<"ERROR: webcam problem\n";
         return 1;
     }
+
+    // read current status of power switch
+    xx = digitalRead(15);
+
+    // 3 1/2 second vibrations to indicate power on
+    digitalWrite(7,HIGH);
+    if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+    digitalWrite(7,LOW);
+    if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+    digitalWrite(7,HIGH);
+    if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+    digitalWrite(7,LOW);
+    if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+    digitalWrite(7,HIGH);
+    if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+    digitalWrite(7,LOW);
+
+    // play power on sound track over speaker
+    system("omxplayer -o local /home/pi/capstone/gdr_rasp/audio/ready2.mp3");
 
     // main loop
     while(1)
     {
+        // check for shutdown command
+        xx = digitalRead(15);
+        if(xx == 0)
+        {
+            // 2 1/2 second vibrations to indicate power off
+            digitalWrite(7,HIGH);
+            if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+                return EXIT_FAILURE;
+            digitalWrite(7,LOW);
+            if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+                return EXIT_FAILURE;
+            digitalWrite(7,HIGH);
+            if(nanosleep(&tim,&tim2) == EXIT_FAILURE)
+                return EXIT_FAILURE;
+            digitalWrite(7,LOW);
+
+            // play power down audio file
+            system("omxplayer -o local /home/pi/capstone/gdr_rasp/audio/power_off.mp3");
+
+            // shutdown raspberry pi
+            system("shutdown now");
+        }
+
         Mat frame;                      // holds a captured frame
         capture >> frame;               // get a new frame from camera
 
@@ -50,61 +99,20 @@ int main(void)
         // display processed image (testing only) XXX
         /* imshow("result", out); */
 
-        // print distance
+        // print distance (testing only) XXX
         /* printf("%f\n",dist); */
 
-        // convert distance to char so it can be sent over uart
-        val = (char)dist;
+        // write pin high if within 6 ft of stop sign
         if(val <= 90 && val > 20)
         {
             digitalWrite(0,HIGH);
-
-            // send data over uart
-            /* txRes = uartSend(uart0_filestream, txBuff, strlen(txBuff)); */
-            /* if(txRes != 0) */
-            /* { */
-            /*     printf("bad val\n"); */
-            /*     // TODO error handling */
-            /* } */
         }
         digitalWrite(0,LOW);
         dist = 0;
 
-        // if any key is pressed exit
+        // if any key is pressed exit (needed for displaying image) XXX
         /* if(waitKey(30) >= 0) break; */
     }
-
-
-    // send data over uart
-    /* txRes = uartSend(uart0_filestream, txBuff, strlen(txBuff)); */
-    /* if(txRes != 0) */
-    /* { */
-    /*     cout<<"Error sending uart data\n"; */
-    /*     return 0; */
-    /* } */
-
-    // delay so data can be echoed back
-    /* sleep(1); */
-
-    // read uart data
-    /* rxRes = uartRead(uart0_filestream, rxBuff, sizeof(rxBuff)); */
-    /* if(rxRes != 0) */
-    /* { */
-    /*     cout<<"Error reading uart data\n"; */
-    /*     return 1; */
-    /* } */
-
-    /* // print data stored in rx buffer */
-    /* int i = 0; */
-    /* while(rxBuff[i] != '\0') */
-    /* { */
-    /*     cout<<rxBuff[i]; */
-    /*     i++; */
-    /* } */
-    /* cout<<"\n"; */
-
-    /* // close uart */
-    /* close(uart0_filestream); */
 
     return 0;
 }
